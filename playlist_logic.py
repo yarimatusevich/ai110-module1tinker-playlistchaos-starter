@@ -1,4 +1,5 @@
 from typing import Dict, List, Optional, Tuple
+import random
 
 Song = Dict[str, object]
 PlaylistMap = Dict[str, List[Song]]
@@ -10,7 +11,6 @@ DEFAULT_PROFILE = {
     "favorite_genre": "rock",
     "include_mixed": True,
 }
-
 
 def normalize_title(title: str) -> str:
     """Normalize a song title for comparisons."""
@@ -100,9 +100,11 @@ def build_playlists(songs: List[Song], profile: Dict[str, object]) -> PlaylistMa
 def merge_playlists(a: PlaylistMap, b: PlaylistMap) -> PlaylistMap:
     """Merge two playlist maps into a new map."""
     merged: PlaylistMap = {}
+
     for key in set(list(a.keys()) + list(b.keys())):
         merged[key] = a.get(key, [])
         merged[key].extend(b.get(key, []))
+
     return merged
 
 
@@ -116,6 +118,7 @@ def compute_playlist_stats(playlists: PlaylistMap) -> Dict[str, object]:
     chill = playlists.get("Chill", [])
     mixed = playlists.get("Mixed", [])
 
+    # fixed hype ratio calculation, previously total = len(hype) which meant hype ratio was always 1.0
     total = len(all_songs)
     hype_ratio = len(hype) / total if total > 0 else 0.0
 
@@ -190,9 +193,8 @@ def lucky_pick(
 
 
 def random_choice_or_none(songs: List[Song]) -> Optional[Song]:
+    # moved import random from here to top of file to stop it from re-evaluating each function call
     """Return a random song or None."""
-    import random
-
     return random.choice(songs)
 
 
